@@ -308,7 +308,7 @@ export const comDetailMovie = {
 
         <div v-if="reviews.length > 0" class='row d-flex align-items-center justify-content-center'>
         
-          <div class="col-md-12 p-3">
+          <div class="col-md-11 p-3">
               <h5 style="margin-bottom: 20px;">Reviews</h5>
               <!-- Review Section -->
               <div  v-for="(review, index) in visibleReviews" :key="review.username" class="card mb-3">

@@ -62,6 +62,7 @@ export default {
       }
     },
     async loadTopBoxOffice() {
+      this.isLoading = true;
       try {
         const query = `movie/topboxoffice/?per_page=5&page=1`;
         const data = await dbProvider.fetch(query);
@@ -70,8 +71,10 @@ export default {
       } catch (error) {
         console.error("Error loading movies:", error);
       }
+      this.isLoading = false;
     },
     async loadMostPopularMovies() {
+      this.isLoading = true;
       try {
         const query = `get/mostpopular/?per_page=20&page=1`;
         const data = await dbProvider.fetch(query);
@@ -80,8 +83,10 @@ export default {
       } catch (error) {
         console.error("Error loading movies:", error);
       }
+      this.isLoading = false;
     },
     async loadTopRating() {
+      this.isLoading = true;
       try {
         const query = `get/top50/?per_page=20&page=1`;
         const data = await dbProvider.fetch(query);
@@ -90,6 +95,7 @@ export default {
       } catch (error) {
         console.error("Error loading movies:", error);
       }
+      this.isLoading = false;
     },
 
     async loadDataHome() {
@@ -100,6 +106,7 @@ export default {
     },
 
     async loadActorDetail(actorId) {
+      this.isLoading = true;
       console.log("ActorID: ", actorId);
       try {
         const query = `detail/name/${actorId}`;
@@ -115,8 +122,10 @@ export default {
       } catch (error) {
         console.error("Error loading movie detail:", error);
       }
+      this.isLoading = false;
     },
     async loadReview(movieId) {
+      this.isLoading = true;
       try {
         const query = `review/review/${movieId}`;
         const data = await dbProvider.fetch(query);
@@ -132,8 +141,10 @@ export default {
       } catch (error) {
         console.error("Error loading movie detail:", error);
       }
+      this.isLoading = false;
     },
     async loadMovieDetail(movieId) {
+      this.isLoading = true;
       try {
         const query = `detail/movie/${movieId}`;
         const data = await dbProvider.fetch(query);
@@ -147,6 +158,7 @@ export default {
       } catch (error) {
         console.error("Error loading movie detail:", error);
       }
+      this.isLoading = false;
     },
     resetData() {
       this.movie = {};
@@ -156,7 +168,7 @@ export default {
   mounted() {
     setTimeout(() => {
       this.loadDataHome();
-    }, 1000);
+    }, 300);
   },
   computed: {
     modeClass() {
@@ -191,53 +203,53 @@ export default {
                   </div>
                 </div>
 
-                <!-- Home -->
-                <div v-if="content === ''" >
-
-                  <div v-if="isLoading" class="h-100 d-flex justify-content-center align-items-center my-2">
+                <div v-if="isLoading" class="h-100 d-flex justify-content-center align-items-center my-2">
                     <div class="spinner-border" role="status">
                       <span class="visually-hidden">Loading...</span>
                     </div>
-                  </div>
-                  <div v-else>
-                      <!-- Top Box Office -->
-                      <div class="row my-4">
-                        <div class="col-3  mx-auto p-0">
-                          <comSlideLarge @movie-detail='loadMovieDetail'/>
-                        </div>
+                </div>
+                <div v-else>
+                    <!-- Home -->
+                    <div v-if="content === ''" >
+                          <!-- Top Box Office -->
+                          <div class="row my-4">
+                            <div class="col-3  mx-auto p-0">
+                              <comSlideLarge @movie-detail='loadMovieDetail'/>
+                            </div>
+                          </div>
+                          <!-- Most popular -->
+                          <div class="row my-4" style="overflow: visible; position: relative; padding-top: 20px; ">
+                            <h3>Most Popular</h3>
+                            <div class="col-12 p-2" style="overflow: visible; position: relative;">
+                              <comSlideSmall :movies="mostPopularMovies" @movie-detail='loadMovieDetail'/>
+                            </div>
+                          </div>
+                          <!-- Top rating -->
+                          <div class="row my-4" style="overflow: visible; position: relative;padding-bottom: 20px;">
+                          <h3>Top Rating</h3>
+                            <div class="col-12 p-2" style="overflow: visible; position: relative; ">
+                              <comSlideSmall :movies="topRatingMovies"  @movie-detail='loadMovieDetail'/>
+                            </div>
+                          </div>
+
+                    </div>
+
+                    <!-- Movie Detail -->
+                    <div class="row" v-if="content === 'movieDetail'">
+                      <div class="col-12 p-2">
+                        <comDetailMovie  @actor-details='loadActorDetail'/>
                       </div>
-                      <!-- Most popular -->
-                      <div class="row my-4" style="overflow: visible; position: relative; padding-top: 20px; ">
-                        <h3>Most Popular</h3>
-                        <div class="col-12 p-2" style="overflow: visible; position: relative;">
-                          <comSlideSmall :movies="mostPopularMovies" @movie-detail='loadMovieDetail'/>
-                        </div>
+                    </div>
+                    <!-- Actor Detail -->
+                    <div class="row" v-if="content === 'actorDetail'">
+                      <div class="col-12 p-2">
+                        <comDetailActor  />
                       </div>
-                      <!-- Top rating -->
-                      <div class="row my-4" style="overflow: visible; position: relative;padding-bottom: 20px;">
-                      <h3>Top Rating</h3>
-                        <div class="col-12 p-2" style="overflow: visible; position: relative; ">
-                          <comSlideSmall :movies="topRatingMovies"  @movie-detail='loadMovieDetail'/>
-                        </div>
-                      </div>
-                  </div>
+                    </div>
 
                 </div>
 
 
-                
-                <!-- Movie Detail -->
-                <div class="row" v-if="content === 'movieDetail'">
-                  <div class="col-12 p-2">
-                    <comDetailMovie  @actor-details='loadActorDetail'/>
-                  </div>
-                </div>
-                <!-- Actor Detail -->
-                <div class="row" v-if="content === 'actorDetail'">
-                  <div class="col-12 p-2">
-                    <comDetailActor  />
-                  </div>
-                </div>
                 
                 
 
