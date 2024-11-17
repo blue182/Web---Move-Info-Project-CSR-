@@ -96,3 +96,72 @@ export const comSlideLarge = {
       </div>
   `,
 };
+
+export const comSlideSmall = {
+  props: {
+    movies: {
+      type: Array,
+      required: true,
+    },
+    moviesPerSlide: {
+      type: Number,
+      default: 3,
+    },
+    uniqueId: {
+      type: String,
+      default: () => "carousel-" + Date.now(),
+    },
+  },
+  computed: {
+    groupedMovies() {
+      const groups = [];
+      for (let i = 0; i < this.movies.length; i += this.moviesPerSlide) {
+        groups.push(this.movies.slice(i, i + this.moviesPerSlide));
+      }
+      return groups;
+    },
+  },
+  template: `
+    <div :id="uniqueId" class="carousel slide" data-bs-ride="carousel" style="overflow: visible; position: relative;"> 
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" style="overflow: visible; position: relative;">
+          <div
+            v-for="(group, index) in groupedMovies"
+            :key="'slide-' + index"
+            :class="['carousel-item', { active: index === 0 }]"
+          >
+              <div class="row">
+                <div v-for="movie in group" :key="movie.id" class="col-md-4">
+                  <div class="box-movie">
+                      <div class="container-image">
+                        <img :src="movie.image" class="d-block w-100" :alt="movie.title" />
+                      </div>
+                      <div class="text-center mt-2 title-movie">{{ movie.title }}</div>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <button
+          class="slideSmall carousel-control-prev"
+          type="button"
+          :data-bs-target="'#' + uniqueId"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="slideSmall carousel-control-next"
+          type="button"
+          :data-bs-target="'#' + uniqueId"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+  </div>
+  `,
+};

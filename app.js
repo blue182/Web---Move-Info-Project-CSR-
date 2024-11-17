@@ -1,4 +1,10 @@
-import { comHeader, comFooter, comNavbar, comSlideLarge } from "./layout.js";
+import {
+  comHeader,
+  comFooter,
+  comNavbar,
+  comSlideLarge,
+  comSlideSmall,
+} from "./layout.js";
 import { DBProvider } from "./moduleProvider.js";
 import { computed } from "vue";
 
@@ -15,6 +21,8 @@ export default {
       movie: {},
       content: null,
       topBoxOfficeMovies: [],
+      mostPopularMovies: [],
+      topRatingMovies: [],
     };
   },
   provide() {
@@ -24,6 +32,8 @@ export default {
       total_pages: computed(() => this.total_pages),
       movie: computed(() => this.movie),
       topBoxOfficeMovies: computed(() => this.topBoxOfficeMovies),
+      mostPopularMovies: computed(() => this.mostPopularMovies),
+      topRatingMovies: computed(() => this.topRatingMovies),
     };
   },
   methods: {
@@ -45,9 +55,29 @@ export default {
     },
     async loadTopBoxOffice() {
       try {
-        const query = `movie/topboxoffice/?per_page=5&page=1}`;
+        const query = `movie/topboxoffice/?per_page=5&page=1`;
         const data = await dbProvider.fetch(query);
         this.topBoxOfficeMovies = data.items;
+        console.log(data);
+      } catch (error) {
+        console.error("Error loading movies:", error);
+      }
+    },
+    async loadMostPopularMovies() {
+      try {
+        const query = `get/mostpopular/?per_page=20&page=1`;
+        const data = await dbProvider.fetch(query);
+        this.mostPopularMovies = data.items;
+        console.log(data);
+      } catch (error) {
+        console.error("Error loading movies:", error);
+      }
+    },
+    async loadTopRating() {
+      try {
+        const query = `get/top50/?per_page=20&page=1`;
+        const data = await dbProvider.fetch(query);
+        this.topRatingMovies = data.items;
         console.log(data);
       } catch (error) {
         console.error("Error loading movies:", error);
@@ -56,6 +86,8 @@ export default {
 
     async loadDataHome() {
       this.loadTopBoxOffice();
+      this.loadMostPopularMovies();
+      this.loadTopRating();
     },
     async loadMovieDetail(movieId) {
       try {
@@ -90,6 +122,7 @@ export default {
     comFooter,
     comNavbar,
     comSlideLarge,
+    comSlideSmall,
   },
   template: `
         <div :class="modeClass">
@@ -112,6 +145,20 @@ export default {
                 <div class="row my-2">
                   <div class="col-3  mx-auto p-0">
                     <comSlideLarge />
+                  </div>
+                </div>
+                <!-- Most popular -->
+                <div class="row my-4" style="overflow: visible; position: relative; padding-top: 20px; ">
+                  <h3>Most Popular</h3>
+                  <div class="col-12 p-2" style="overflow: visible; position: relative;">
+                    <comSlideSmall :movies="mostPopularMovies"/>
+                  </div>
+                </div>
+                <!-- Top rating -->
+                <div class="row my-4" style="overflow: visible; position: relative;padding-bottom: 20px;">
+                 <h3>Top Rating</h3>
+                  <div class="col-12 p-2" style="overflow: visible; position: relative; ">
+                    <comSlideSmall :movies="topRatingMovies"/>
                   </div>
                 </div>
 
