@@ -7,6 +7,7 @@ import {
   comDetailMovie,
   comDetailActor,
   slideImage,
+  comListMovie,
 } from "./layout.js";
 import { DBProvider } from "./moduleProvider.js";
 import { computed } from "vue";
@@ -18,7 +19,7 @@ export default {
     return {
       isDarkMode: false,
       page: 1,
-      per_page: 10,
+      per_page: 9,
       total_pages: 0,
       movies: [],
       movie: {},
@@ -30,6 +31,8 @@ export default {
       reviews: [],
       isLoading: true,
       listMovieOfActor: [],
+      dataSearch: [],
+      temp: "",
     };
   },
   provide() {
@@ -44,6 +47,7 @@ export default {
       mostPopularMovies: computed(() => this.mostPopularMovies),
       topRatingMovies: computed(() => this.topRatingMovies),
       listMovieOfActor: computed(() => this.listMovieOfActor),
+      dataSearch: computed(() => this.dataSearch),
     };
   },
   methods: {
@@ -61,6 +65,21 @@ export default {
         console.log(data);
       } catch (error) {
         console.error("Error loading movies:", error);
+      }
+    },
+    async loadMoviesFromSearch(page = 1, pattern, cls = "movie") {
+      if (pattern) {
+        try {
+          const query = `search/${cls}/${pattern}?page=${page}&per_page=${this.per_page}`;
+          const data = await dbProvider.fetch(query);
+          this.dataSearch = data.items;
+          this.page = page;
+          this.total_pages = data.total_page;
+          console.log(data);
+          console.log(this.dataSearch);
+        } catch (error) {
+          console.error("Error loading movies:", error);
+        }
       }
     },
     async loadListMovieOfActor(page = 1, actorId) {
@@ -180,6 +199,17 @@ export default {
       this.movie = {};
       (this.actor = {}), (this.reviews = []), (this.content = "");
     },
+    handleSearch(query) {
+      this.content = "search";
+      console.log("Searching for:", query);
+      if (query != "") {
+        this.temp = query;
+        this.loadMoviesFromSearch(1, query, "movie");
+      }
+    },
+    loadPage(page) {
+      this.loadMoviesFromSearch(page, this.temp, "movie");
+    },
   },
   mounted() {
     setTimeout(() => {
@@ -201,6 +231,7 @@ export default {
     comDetailMovie,
     comDetailActor,
     slideImage,
+    comListMovie,
   },
   template: `
         <div :class="modeClass">
@@ -215,7 +246,7 @@ export default {
                 <!-- Navbar -->
                 <div class="row">
                   <div class="col-12 p-0">
-                    <comNavbar @go-home="resetData" />
+                    <comNavbar @go-home="resetData" @search="handleSearch"/>
                   </div>
                 </div>
 
@@ -260,6 +291,13 @@ export default {
                     <div class="row" v-if="content === 'actorDetail'">
                       <div class="col-12 p-2">
                         <comDetailActor  />
+                      </div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="row" v-if="content === 'search'">
+                      <div class="col-12 p-2">
+                        <comListMovie  @update-data="loadPage"  @movie-detail='loadMovieDetail'/>
                       </div>
                     </div>
 

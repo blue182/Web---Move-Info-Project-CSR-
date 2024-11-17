@@ -41,9 +41,25 @@ export const comFooter = {
 };
 
 export const comNavbar = {
+  data() {
+    return {
+      searchQuery: "",
+    };
+  },
   methods: {
     goHome() {
       this.$emit("go-home");
+    },
+    handleSearch(event) {
+      event.preventDefault();
+      if (this.searchQuery.trim()) {
+        this.$emit("search", this.searchQuery.trim());
+      }
+    },
+    preventEnter(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+      }
     },
   },
   template: `
@@ -64,9 +80,9 @@ export const comNavbar = {
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarContent" >
-              <form class="d-flex ms-auto">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
+              <form class="d-flex ms-auto" @submit.prevent>
+                <input class="form-control me-2" type="search" placeholder="Search" v-model="searchQuery" aria-label="Search">
+                <button class="btn btn-outline-success" type="button" @click="handleSearch">Search</button>
               </form>
             </div>
           </div>
@@ -368,5 +384,64 @@ export const comDetailActor = {
 
           </div>
         </div>
+  `,
+};
+
+export const comListMovie = {
+  inject: ["dataSearch", "page", "total_pages"],
+  methods: {
+    updateData(page) {
+      this.$emit("updateData", page);
+    },
+    movieDetail(id) {
+      this.$emit("movieDetail", id);
+    },
+  },
+  template: `
+      <div v-if="dataSearch.length > 0" class="movie-list-container mt-2">
+        <div class="row row-cols-1 row-cols-md-3 g-5">
+          <div v-for="movie in dataSearch" :key="movie.id" @click="movieDetail(movie.id)" class="col">
+            <div class="movie-card h-100">
+              <div class="movie-poster-container">
+                <div class="poster-wrapper">
+                  <img
+                    :src="(movie.posters && movie.posters.length > 0) ? movie.posters[2].link : movie.image"
+                    alt="Movie Poster"
+                    class="movie-poster"
+                  />
+                </div>
+                <div class="movie-info">
+                  <h5 class="movie-title">{{ movie.title }}</h5>
+                  <p style="color: #b6b0b0; text-align: center;  width: 100%;"> [           
+                        {{ movie.genreList && Array.isArray(movie.genreList) && movie.genreList.length > 0 
+                        ? movie.genreList.map(genre => genre.value).join(', ')  : 'N/A' }} ]        
+                  </p>
+                  <p><strong>Rated:</strong> {{ movie.ratings.imDb }}</p>
+                  <p><strong>Length:</strong> {{ movie.runtimeStr }}</p>
+                  <p><strong>Language:</strong> {{ movie.languages }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pagination-controls d-flex align-items-center justify-content-center mt-4" >
+            <ul class="pagination">
+                <li class="page-item" :class="{ disabled: page === 1}">
+                    <a class="page-link" href="#" @click.prevent="updateData(page -1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <li class="page-item" v-for="i in total_pages">
+                    <a :class="{ 'page-link': true, 'active': i === page }" href="#" @click.prevent="updateData(i)">{{i}}</a>
+                </li>
+                <li class="page-item" :class="{ disabled: page === total_pages}">
+                    <a class="page-link" href="#" @click.prevent="updateData(page  + 1)" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+      </div>
   `,
 };

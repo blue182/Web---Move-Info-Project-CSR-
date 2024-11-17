@@ -53,6 +53,7 @@ export class DBProvider {
 
   async fetch(query) {
     const { type, class: cls, pattern, params } = this.parseQuery(query);
+    console.log("Query: ", query);
 
     let endpoint;
     switch (cls) {
@@ -116,8 +117,13 @@ export class DBProvider {
         );
       }
       if (cls === "movie") {
+        console.log("Search Movie: raw data: ", rawData);
+        console.log("Pattern search: ", pattern);
         filteredData = rawData.filter((item) =>
-          item.title.toLowerCase().includes(pattern.toLowerCase())
+          item.title
+            .toLowerCase()
+            .replace(/\s+/g, " ")
+            .includes(pattern.toLowerCase())
         );
       }
     } else if (type === "detail" && pattern) {
@@ -126,7 +132,6 @@ export class DBProvider {
     }
 
     if (cls === "actor-movies" && pattern) {
-      console.log("Raw Data: ", rawData);
       filteredData = rawData.filter((movie) =>
         movie.actorList.some((actor) => actor.id === pattern)
       );
