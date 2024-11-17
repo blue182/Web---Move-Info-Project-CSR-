@@ -29,6 +29,7 @@ export default {
       topRatingMovies: [],
       reviews: [],
       isLoading: true,
+      listMovieOfActor: [],
     };
   },
   provide() {
@@ -42,6 +43,7 @@ export default {
       topBoxOfficeMovies: computed(() => this.topBoxOfficeMovies),
       mostPopularMovies: computed(() => this.mostPopularMovies),
       topRatingMovies: computed(() => this.topRatingMovies),
+      listMovieOfActor: computed(() => this.listMovieOfActor),
     };
   },
   methods: {
@@ -57,6 +59,19 @@ export default {
         this.page = data.page;
         this.total_pages = data.total_page;
         console.log(data);
+      } catch (error) {
+        console.error("Error loading movies:", error);
+      }
+    },
+    async loadListMovieOfActor(page = 1, actorId) {
+      console.log("actor id: ", actorId);
+      try {
+        const query = `movie/actor-movies/${actorId}?page=${page}&per_page=${this.per_page}`;
+        const data = await dbProvider.fetch(query);
+        this.listMovieOfActor = data.items;
+        this.page = data.page;
+        this.total_pages = data.total_page;
+        console.log("List Movie Of actor: ", data);
       } catch (error) {
         console.error("Error loading movies:", error);
       }
@@ -122,6 +137,7 @@ export default {
       } catch (error) {
         console.error("Error loading movie detail:", error);
       }
+      this.loadListMovieOfActor(1, actorId);
       this.isLoading = false;
     },
     async loadReview(movieId) {

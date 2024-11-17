@@ -78,6 +78,9 @@ export class DBProvider {
       case "topboxoffice":
         endpoint = "Movies";
         break;
+      case "actor-movies":
+        endpoint = "Movies";
+        break;
       default:
         throw new Error(`Unsupported class: ${cls}`);
     }
@@ -85,6 +88,7 @@ export class DBProvider {
     const rawData = await this.fetchRawData(endpoint);
     let filteredData = rawData;
     console.log("Class: ", cls);
+    console.log("Pattern: ", pattern);
 
     if (cls === "topboxoffice") {
       filteredData = rawData
@@ -103,7 +107,6 @@ export class DBProvider {
           return grossB - grossA;
         });
     }
-
     if (type === "search" && pattern) {
       if (cls === "name") {
         filteredData = rawData.filter((item) =>
@@ -120,6 +123,17 @@ export class DBProvider {
     } else if (type === "detail" && pattern) {
       const detail = rawData.find((item) => item.id === pattern);
       return detail ? { detail } : { error: "Not found" };
+    }
+
+    if (cls === "actor-movies" && pattern) {
+      console.log("Raw Data: ", rawData);
+      filteredData = rawData.filter((movie) =>
+        movie.actorList.some((actor) => actor.id === pattern)
+      );
+
+      if (filteredData.length === 0) {
+        return { error: `No movies found for actorId: ${pattern}` };
+      }
     }
 
     const page = parseInt(params.page || 1, 10);
