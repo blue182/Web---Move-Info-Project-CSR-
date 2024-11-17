@@ -79,9 +79,17 @@ export const comSlideLarge = {
         <div class="carousel-inner">
           <!-- Loop through topBoxOfficeMovies and display them -->
           <div v-for="(movie, index) in topBoxOfficeMovies" :key="movie.id" :class="['carousel-item', index === 0 ? 'active' : '']">
-            <div class='inner-image'><img :src="movie.image" class="d-block w-100 h-100" :alt="movie.title" /></div>
-            <div class="carousel-caption d-none d-md-block">
-              <h5>{{ movie.title }}</h5>
+            <div class='inner-image'>          
+                <img :src="(movie.posters && movie.posters.length > 0) ? movie.posters[2].link : movie.image" 
+                  class="d-block w-100 h-100" 
+                :alt="movie.title" />
+            </div>
+            <div class="carousel-caption d-none d-md-block" style="background-color: rgba(0, 0, 0, 0.767); padding: 0px" >
+              <div style="font-size: 1.2rem; color: rgb(251, 206, 28);">{{ movie.title }}</div>
+              <div style="font-size: 0.9rem"> 
+                <div>Length: {{ movie.runtimeStr }}</div>
+                <div>Rating from IMDb: {{ movie.ratings.imDb }}</div>
+              </div>
             </div>
           </div>
         </div>
