@@ -65,10 +65,12 @@ export class DBProvider {
         } else {
           endpoint = "Names";
         }
-
         break;
       case "top50":
         endpoint = "Top50Movies";
+        break;
+      case "review":
+        endpoint = "Reviews";
         break;
       case "mostpopular":
         endpoint = "MostPopularMovies";
@@ -123,6 +125,18 @@ export class DBProvider {
     const page = parseInt(params.page || 1, 10);
     const perPage = parseInt(params.per_page || 10, 10);
     const paginatedData = this.paginateData(filteredData, page, perPage);
+
+    if (type === "review" && pattern) {
+      const filteredReviews = rawData.filter(
+        (review) => review.movieId === pattern
+      );
+
+      if (filteredReviews.length === 0) {
+        return { error: `No reviews found for movieId: ${pattern}` };
+      }
+
+      return filteredReviews ? { filteredReviews } : { error: "Not found" };
+    }
 
     if (type === "search") {
       return {

@@ -27,6 +27,8 @@ export default {
       topBoxOfficeMovies: [],
       mostPopularMovies: [],
       topRatingMovies: [],
+      reviews: [],
+      isLoading: true,
     };
   },
   provide() {
@@ -36,6 +38,7 @@ export default {
       total_pages: computed(() => this.total_pages),
       movie: computed(() => this.movie),
       actor: computed(() => this.actor),
+      reviews: computed(() => this.reviews),
       topBoxOfficeMovies: computed(() => this.topBoxOfficeMovies),
       mostPopularMovies: computed(() => this.mostPopularMovies),
       topRatingMovies: computed(() => this.topRatingMovies),
@@ -93,7 +96,9 @@ export default {
       this.loadTopBoxOffice();
       this.loadMostPopularMovies();
       this.loadTopRating();
+      this.isLoading = false;
     },
+
     async loadActorDetail(actorId) {
       console.log("ActorID: ", actorId);
       try {
@@ -111,14 +116,31 @@ export default {
         console.error("Error loading movie detail:", error);
       }
     },
+    async loadReview(movieId) {
+      try {
+        const query = `review/review/${movieId}`;
+        const data = await dbProvider.fetch(query);
+        if (data.filteredReviews) {
+          this.reviews = data.filteredReviews[0].items;
+          this.reviews = this.reviews.map((review) => ({
+            ...review,
+            collapsedReviews: true,
+          }));
+        } else {
+          console.error("Movie not found");
+        }
+      } catch (error) {
+        console.error("Error loading movie detail:", error);
+      }
+    },
     async loadMovieDetail(movieId) {
       try {
         const query = `detail/movie/${movieId}`;
         const data = await dbProvider.fetch(query);
-        console.log("Detail Movie: ", data);
         if (data.detail) {
           this.movie = data.detail;
           this.content = "movieDetail";
+          this.loadReview(movieId);
         } else {
           console.error("Movie not found");
         }
@@ -128,11 +150,13 @@ export default {
     },
     resetData() {
       this.movie = {};
-      this.content = "";
+      (this.actor = {}), (this.reviews = []), (this.content = "");
     },
   },
   mounted() {
-    this.loadDataHome();
+    setTimeout(() => {
+      this.loadDataHome();
+    }, 1000);
   },
   computed: {
     modeClass() {
@@ -169,6 +193,13 @@ export default {
 
                 <!-- Home -->
                 <div v-if="content === ''" >
+
+                  <div v-if="isLoading" class="h-100 d-flex justify-content-center align-items-center my-2">
+                    <div class="spinner-border" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                  <div v-else>
                       <!-- Top Box Office -->
                       <div class="row my-4">
                         <div class="col-3  mx-auto p-0">
@@ -190,6 +221,8 @@ export default {
                         </div>
                       </div>
                   </div>
+
+                </div>
 
 
                 

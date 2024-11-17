@@ -198,9 +198,9 @@ export const slideImage = {
     },
   },
   template: `
-        <div id="carouselExample" class="carousel slide"  data-bs-ride="carousel" data-bs-interval="3000">
+        <div id="carouselExample" class="carousel slide"  data-bs-ride="carousel" data-bs-interval="3000" >
             <!-- Slides -->
-            <div class="carousel-inner">
+            <div class="carousel-inner" style="height: 400px;">
               <div
                 class="carousel-item"
                 v-for="(image, index) in images"
@@ -208,7 +208,7 @@ export const slideImage = {
                 :class="{ active: index === 0 }"
               >
                 <img :src="image.image" class="d-block w-100" alt="Slide Image" 
-                  style="max-height: 300px; object-fit: cover; width: 100%;" />
+                  style="height: 100%; object-fit: cover; width: 100%;" />
               </div>
             </div>
 
@@ -238,14 +238,29 @@ export const slideImage = {
   `,
 };
 export const comDetailMovie = {
-  inject: ["movie"],
+  inject: ["movie", "reviews"],
   data() {
-    return {};
+    return {
+      visibleReviewsCount: 5,
+    };
   },
   emits: ["actor-details"],
   methods: {
     actorDetail(id) {
       this.$emit("actor-details", id);
+    },
+    toggleContent(index) {
+      this.reviews[index].collapsedReviews =
+        !this.reviews[index].collapsedReviews;
+    },
+
+    showMoreReviews() {
+      this.visibleReviewsCount = this.reviews.length;
+    },
+  },
+  computed: {
+    visibleReviews() {
+      return this.reviews.slice(0, this.visibleReviewsCount);
     },
   },
   components: {
@@ -288,6 +303,40 @@ export const comDetailMovie = {
             <div class="col-md-9 p-3">
                <slideImage :images="movie.images" />
             </div>
+        
+        </div>
+
+        <div v-if="reviews.length > 0" class='row d-flex align-items-center justify-content-center'>
+        
+          <div class="col-md-12 p-3">
+              <h5 style="margin-bottom: 20px;">Reviews</h5>
+              <!-- Review Section -->
+              <div  v-for="(review, index) in visibleReviews" :key="review.username" class="card mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">{{ review.title }}</h5>
+                  <!-- Content review -->
+                  <p class="card-text" :class="{ 'd-none': review.collapsedReviews }">
+                    {{ review.content }}
+                  </p>
+
+                  <!-- Button See More/See Less -->
+                  <button v-if="review.content.length > 100" @click="toggleContent(index)" class="btn btn-link">
+                    {{ review.collapsedReviews ? 'See More' : 'See Less' }}
+                  </button>
+                  <div class="d-flex justify-content-between">
+                    <span class="text-muted">By: {{ review.username }}</span>
+                    <span class="badge" :style="{ backgroundColor: '#f8f9fa', color: '#6c757d' }">{{ '⭐'.repeat(review.rate) }}</span>
+                  </div>
+                  <p class="text-muted">{{ review.date }}</p>
+                  <div v-if="review.warningSpoilers" class="alert alert-danger">
+                    ⚠️ Spoilers Ahead!
+                  </div>
+                </div>
+              </div>
+              <button v-if="reviews.length > visibleReviews.length" @click="showMoreReviews" class="btn btn-primary">
+                  Show More
+              </button>
+          </div>
         
         </div>
 
