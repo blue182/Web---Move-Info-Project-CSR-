@@ -1,6 +1,6 @@
 const API_DOMAIN = "http://matuan.online:2422/api/";
 
-class DBProvider {
+export class DBProvider {
   constructor() {
     this.baseURL = API_DOMAIN;
     this.cache = {};

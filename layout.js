@@ -66,3 +66,33 @@ export const comNavbar = {
         </nav>
     `,
 };
+
+export const comSlideLarge = {
+  inject: ["topBoxOfficeMovies"],
+  data() {
+    return {};
+  },
+  methods: {},
+  mounted() {},
+  template: `
+      <div id="movieCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <!-- Loop through topBoxOfficeMovies and display them -->
+          <div v-for="(movie, index) in topBoxOfficeMovies" :key="movie.id" :class="['carousel-item', index === 0 ? 'active' : '']">
+            <div class='inner-image'><img :src="movie.image" class="d-block w-100 h-100" :alt="movie.title" /></div>
+            <div class="carousel-caption d-none d-md-block">
+              <h5>{{ movie.title }}</h5>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#movieCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#movieCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+  `,
+};
