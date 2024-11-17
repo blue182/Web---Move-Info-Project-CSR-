@@ -41,10 +41,17 @@ export const comFooter = {
 };
 
 export const comNavbar = {
+  methods: {
+    goHome() {
+      this.$emit("go-home");
+    },
+  },
   template: `
         <nav class="navbar navbar-expand-lg navbar-light rounded" style="background-color: #67abfe80; border: 1px solid blue">
           <div class="container-fluid">
-            <a class="navbar-brand" href="/"><i class="bi bi-house-fill"></i></a>
+            <button class="navbar-brand" @click="goHome" style="border: none; background: transparent;">
+              <i class="bi bi-house-fill">
+            </i></button>
             <button
               class="navbar-toggler"
               type="button"
@@ -72,13 +79,17 @@ export const comSlideLarge = {
   data() {
     return {};
   },
-  methods: {},
+  methods: {
+    movieDetail(id) {
+      this.$emit("movieDetail", id);
+    },
+  },
   mounted() {},
   template: `
       <div id="movieCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
           <!-- Loop through topBoxOfficeMovies and display them -->
-          <div v-for="(movie, index) in topBoxOfficeMovies" :key="movie.id" :class="['carousel-item', index === 0 ? 'active' : '']">
+          <div v-for="(movie, index) in topBoxOfficeMovies" :key="movie.id" @click="movieDetail(movie.id)" :class="['carousel-item', index === 0 ? 'active' : '']">
             <div class='inner-image'>          
                 <img :src="(movie.posters && movie.posters.length > 0) ? movie.posters[2].link : movie.image" 
                   class="d-block w-100 h-100" 
@@ -129,6 +140,11 @@ export const comSlideSmall = {
       return groups;
     },
   },
+  methods: {
+    movieDetail(id) {
+      this.$emit("movieDetail", id);
+    },
+  },
   template: `
     <div :id="uniqueId" class="carousel slide" data-bs-ride="carousel" style="overflow: visible; position: relative;"> 
         <!-- Wrapper for slides -->
@@ -139,7 +155,7 @@ export const comSlideSmall = {
             :class="['carousel-item', { active: index === 0 }]"
           >
               <div class="row">
-                <div v-for="movie in group" :key="movie.id" class="col-md-4">
+                <div v-for="movie in group" :key="movie.id" @click="movieDetail(movie.id)" class="col-md-4">
                   <div class="box-movie">
                       <div class="container-image">
                         <img :src="movie.image" class="d-block w-100" :alt="movie.title" />
@@ -171,5 +187,137 @@ export const comSlideSmall = {
           <span class="visually-hidden">Next</span>
         </button>
   </div>
+  `,
+};
+
+export const slideImage = {
+  props: {
+    images: {
+      type: Array,
+      required: true,
+    },
+  },
+  template: `
+        <div id="carouselExample" class="carousel slide"  data-bs-ride="carousel" data-bs-interval="3000">
+            <!-- Slides -->
+            <div class="carousel-inner">
+              <div
+                class="carousel-item"
+                v-for="(image, index) in images"
+                :key="index"
+                :class="{ active: index === 0 }"
+              >
+                <img :src="image.image" class="d-block w-100" alt="Slide Image" 
+                  style="max-height: 300px; object-fit: cover; width: 100%;" />
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <button
+              class="carousel-control-prev"
+              style="left: -15%;"
+              type="button"
+              data-bs-target="#carouselExample"
+              data-bs-slide="prev"
+            >
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button
+              class="carousel-control-next"
+              style="right: -15%;"
+              type="button"
+              data-bs-target="#carouselExample"
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+      </div>
+  
+  `,
+};
+export const comDetailMovie = {
+  inject: ["movie"],
+  data() {
+    return {};
+  },
+  emits: ["actor-details"],
+  methods: {
+    actorDetail(id) {
+      this.$emit("actor-details", id);
+    },
+  },
+  components: {
+    slideImage,
+  },
+  template: `
+
+        <div class='row'>
+            <div class="col-md-5 d-flex align-items-center justify-content-center text-center p-3">
+              <div style="width: 80%;"> 
+                <img :src="(movie.posters && movie.posters.length > 0) ? movie.posters[2].link : movie.image" alt="Poster Movie" class="img-fluid rounded">
+              </div>
+            </div>
+            <div class="col-md-7 p-4 d-flex flex-column justify-content-center">
+              <h2 style="text-align: center; margin-bottom: 70px;">{{ movie.fullTitle }}</h2>
+              <p><strong>Product year:</strong> {{ movie.year }}</p>
+              <p><strong>Director:</strong>       
+                    {{ movie.directorList && Array.isArray(movie.directorList) && movie.directorList.length > 0 
+                      ? movie.directorList.map(director => director.name).join(', ') : 'N/A' }}
+              </p>
+              <p><strong>Genre:</strong> 
+              
+                  {{ movie.genreList && Array.isArray(movie.genreList) && movie.genreList.length > 0 
+                  ? movie.genreList.map(genre => genre.value).join(', ')  : 'N/A' }}
+          
+              </p>
+              <p><strong>Actors: </strong> 
+          
+                <span v-for="(actor, index) in movie.actorList" :key="actor.id">
+                  <span @click="actorDetail(actor.id)" style="cursor: pointer; color: #007bff;">{{ actor.name }}</span>
+                  <span v-if="index < movie.actorList.length - 1">, </span>
+                </span>
+              </p> 
+              <h5>Summary:</h5>
+              <p>{{ movie.plot }}</p>
+            </div>
+        </div>
+
+        <div class='row d-flex align-items-center justify-content-center'>
+            <div class="col-md-9 p-3">
+               <slideImage :images="movie.images" />
+            </div>
+        
+        </div>
+
+  
+  `,
+};
+
+export const comDetailActor = {
+  inject: ["actor"],
+  data() {
+    return {};
+  },
+  methods: {},
+  template: `
+        <div class='row'>
+            <div class="col-md-5 d-flex align-items-center justify-content-center text-center p-3">
+              <div style="width: 80%;"> 
+                <img :src="actor.image" alt="Image Actor" class="img-fluid rounded" style="max-height: 500px; object-fit: cover; width: 100%;">
+              </div>
+            </div>
+            <div class="col-md-7 p-4 d-flex flex-column justify-content-center">
+              <h2 style="text-align: center; margin-bottom: 70px;">{{ actor.name }}</h2>
+              <p><strong>Birthday:</strong> {{ actor.birthDate }}</p>
+              <p v-if="actor.deathDate"><strong>Death Date:</strong> {{ actor.deathDate }}</p>
+              <p><strong>Height:</strong> {{ actor.height }}</p>
+              <p><strong>Role:</strong> {{ actor.role }}</p>
+              <p><strong>Awards:</strong> {{ actor.awards }}</p>
+              <p><strong>Summary:</strong> {{ actor.summary }}</p>
+
+          </div>
+        </div>
   `,
 };

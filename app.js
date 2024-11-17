@@ -4,6 +4,9 @@ import {
   comNavbar,
   comSlideLarge,
   comSlideSmall,
+  comDetailMovie,
+  comDetailActor,
+  slideImage,
 } from "./layout.js";
 import { DBProvider } from "./moduleProvider.js";
 import { computed } from "vue";
@@ -19,7 +22,8 @@ export default {
       total_pages: 0,
       movies: [],
       movie: {},
-      content: null,
+      actor: {},
+      content: "",
       topBoxOfficeMovies: [],
       mostPopularMovies: [],
       topRatingMovies: [],
@@ -31,6 +35,7 @@ export default {
       page: computed(() => this.page),
       total_pages: computed(() => this.total_pages),
       movie: computed(() => this.movie),
+      actor: computed(() => this.actor),
       topBoxOfficeMovies: computed(() => this.topBoxOfficeMovies),
       mostPopularMovies: computed(() => this.mostPopularMovies),
       topRatingMovies: computed(() => this.topRatingMovies),
@@ -89,13 +94,16 @@ export default {
       this.loadMostPopularMovies();
       this.loadTopRating();
     },
-    async loadMovieDetail(movieId) {
+    async loadActorDetail(actorId) {
+      console.log("ActorID: ", actorId);
       try {
-        const query = `detail/movie/${movieId}`;
+        const query = `detail/name/${actorId}`;
+
         const data = await dbProvider.fetch(query);
+        console.log("Detail Actor: ", data);
         if (data.detail) {
-          this.movie = data.detail;
-          this.content = "comDetails";
+          this.actor = data.detail;
+          this.content = "actorDetail";
         } else {
           console.error("Movie not found");
         }
@@ -103,9 +111,24 @@ export default {
         console.error("Error loading movie detail:", error);
       }
     },
-    resetDetail() {
+    async loadMovieDetail(movieId) {
+      try {
+        const query = `detail/movie/${movieId}`;
+        const data = await dbProvider.fetch(query);
+        console.log("Detail Movie: ", data);
+        if (data.detail) {
+          this.movie = data.detail;
+          this.content = "movieDetail";
+        } else {
+          console.error("Movie not found");
+        }
+      } catch (error) {
+        console.error("Error loading movie detail:", error);
+      }
+    },
+    resetData() {
       this.movie = {};
-      this.content = null;
+      this.content = "";
     },
   },
   mounted() {
@@ -123,6 +146,9 @@ export default {
     comNavbar,
     comSlideLarge,
     comSlideSmall,
+    comDetailMovie,
+    comDetailActor,
+    slideImage,
   },
   template: `
         <div :class="modeClass">
@@ -137,30 +163,50 @@ export default {
                 <!-- Navbar -->
                 <div class="row">
                   <div class="col-12 p-0">
-                    <comNavbar />
+                    <comNavbar @go-home="resetData" />
                   </div>
                 </div>
 
-                <!-- Top Box Office -->
-                <div class="row my-2">
-                  <div class="col-3  mx-auto p-0">
-                    <comSlideLarge />
+                <!-- Home -->
+                <div v-if="content === ''" >
+                      <!-- Top Box Office -->
+                      <div class="row my-4">
+                        <div class="col-3  mx-auto p-0">
+                          <comSlideLarge @movie-detail='loadMovieDetail'/>
+                        </div>
+                      </div>
+                      <!-- Most popular -->
+                      <div class="row my-4" style="overflow: visible; position: relative; padding-top: 20px; ">
+                        <h3>Most Popular</h3>
+                        <div class="col-12 p-2" style="overflow: visible; position: relative;">
+                          <comSlideSmall :movies="mostPopularMovies" @movie-detail='loadMovieDetail'/>
+                        </div>
+                      </div>
+                      <!-- Top rating -->
+                      <div class="row my-4" style="overflow: visible; position: relative;padding-bottom: 20px;">
+                      <h3>Top Rating</h3>
+                        <div class="col-12 p-2" style="overflow: visible; position: relative; ">
+                          <comSlideSmall :movies="topRatingMovies"  @movie-detail='loadMovieDetail'/>
+                        </div>
+                      </div>
+                  </div>
+
+
+                
+                <!-- Movie Detail -->
+                <div class="row" v-if="content === 'movieDetail'">
+                  <div class="col-12 p-2">
+                    <comDetailMovie  @actor-details='loadActorDetail'/>
                   </div>
                 </div>
-                <!-- Most popular -->
-                <div class="row my-4" style="overflow: visible; position: relative; padding-top: 20px; ">
-                  <h3>Most Popular</h3>
-                  <div class="col-12 p-2" style="overflow: visible; position: relative;">
-                    <comSlideSmall :movies="mostPopularMovies"/>
+                <!-- Actor Detail -->
+                <div class="row" v-if="content === 'actorDetail'">
+                  <div class="col-12 p-2">
+                    <comDetailActor  />
                   </div>
                 </div>
-                <!-- Top rating -->
-                <div class="row my-4" style="overflow: visible; position: relative;padding-bottom: 20px;">
-                 <h3>Top Rating</h3>
-                  <div class="col-12 p-2" style="overflow: visible; position: relative; ">
-                    <comSlideSmall :movies="topRatingMovies"/>
-                  </div>
-                </div>
+                
+                
 
                 <!-- Footer -->
                 <div class="row my-2 py-2">

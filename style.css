@@ -9,7 +9,7 @@
 }
 .dark-mode {
   background-color: #101112cd;
-  color: rgba(245, 188, 188, 0.83);
+  color: rgba(250, 208, 208, 0.83);
 }
 
 .header {
@@ -26,11 +26,6 @@
   text-align: center;
   padding: 10px;
   border-radius: 5px;
-}
-
-.footer.dark-mode {
-  background-color: #c0dfff;
-  color: #f8f9fa;
 }
 
 .mode-toggle-container {
@@ -194,3 +189,7 @@
 }
 
 /* ========== END COMPONENT SLIDE =========== */
+
+.carousel-item {
+  transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+}
