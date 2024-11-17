@@ -1,0 +1,101 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.light-mode {
+  background-color: white;
+  color: rgb(44, 10, 10);
+}
+.dark-mode {
+  background-color: #101112cd;
+  color: rgba(245, 188, 188, 0.83);
+}
+
+.header {
+  background-color: #f94a5842;
+  padding: 10px;
+  border: 1px solid #dc3545;
+  border-radius: 5px;
+}
+
+.footer {
+  width: 100%;
+  background-color: #f94a5842;
+  border: 1px solid #dc3545;
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.footer.dark-mode {
+  background-color: #c0dfff;
+  color: #f8f9fa;
+}
+
+.mode-toggle-container {
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+}
+
+.mode-toggle {
+  width: 40px;
+  height: 15px;
+  background-color: white;
+  border-radius: 25px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.mode-toggle .switch {
+  width: 10px;
+  height: 10px;
+  background-color: #6c757d;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  transition: all 0.3s ease;
+}
+
+.switch-dark {
+  background-color: #3582df;
+  border: 1px solid blue;
+  box-shadow: 0 0 5px #007bff;
+}
+
+.switch-dark .switch {
+  background-color: white;
+  left: 25px;
+}
+
+/* ====== NAVBAR ======== */
+.dark-mode i {
+  color: rgba(255, 255, 255, 0.83);
+}
+.dark-mode input {
+  background-color: #10111292;
+  color: #f8f9fa;
+}
+
+.dark-mode input.form-control:focus {
+  background-color: #504848 !important;
+  border: 1px solid #007bff;
+  outline: none;
+  color: #f8f9fa;
+}
+
+.dark-mode input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dark-mode .btn-outline-success {
+  border-color: #30d657;
+  color: #2ee759;
+}
+
+.dark-mode .btn-outline-success:hover {
+  border-color: #1e7e34;
+}
+/* ====== END NAVBAR ======== */
