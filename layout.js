@@ -122,7 +122,7 @@ export const comSlideLarge = {
         </div>
 
 
-        <div class="carousel-inner">
+        <div class="carousel-inner largeSlide">
           <!-- Loop through topBoxOfficeMovies and display them -->
           <div v-for="(movie, index) in topBoxOfficeMovies" :key="movie.id" @click="movieDetail(movie.id)" :class="['carousel-item', index === 0 ? 'active' : '']">
             <div class='inner-image'>          
