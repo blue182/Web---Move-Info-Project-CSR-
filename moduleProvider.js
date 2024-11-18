@@ -53,7 +53,6 @@ export class DBProvider {
 
   async fetch(query) {
     const { type, class: cls, pattern, params } = this.parseQuery(query);
-    console.log("Query: ", query);
 
     let endpoint;
     switch (cls) {
@@ -85,11 +84,8 @@ export class DBProvider {
       default:
         throw new Error(`Unsupported class: ${cls}`);
     }
-    console.log("Endponit: ", endpoint);
     const rawData = await this.fetchRawData(endpoint);
     let filteredData = rawData;
-    console.log("Class: ", cls);
-    console.log("Pattern: ", pattern);
 
     if (cls === "topboxoffice") {
       filteredData = rawData
@@ -117,8 +113,6 @@ export class DBProvider {
         );
       }
       if (cls === "movie") {
-        console.log("Search Movie: raw data: ", rawData);
-        console.log("Pattern search: ", pattern);
         filteredData = rawData.filter((item) =>
           item.title
             .toLowerCase()
@@ -133,7 +127,13 @@ export class DBProvider {
 
     if (cls === "actor-movies" && pattern) {
       filteredData = rawData.filter((movie) =>
-        movie.actorList.some((actor) => actor.id === pattern)
+        movie.actorList.some((actor) => {
+          if (actor.id === pattern) {
+            movie.roleOfActor = actor.asCharacter;
+            return true;
+          }
+          return false;
+        })
       );
 
       if (filteredData.length === 0) {

@@ -50,10 +50,12 @@ export const comNavbar = {
     goHome() {
       this.$emit("go-home");
     },
-    handleSearch(event) {
-      event.preventDefault();
+    handleSearch(searchType) {
       if (this.searchQuery.trim()) {
-        this.$emit("search", this.searchQuery.trim());
+        this.$emit("search", {
+          query: this.searchQuery.trim(),
+          type: searchType,
+        });
       }
     },
     preventEnter(event) {
@@ -80,9 +82,10 @@ export const comNavbar = {
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarContent" >
-              <form class="d-flex ms-auto" @submit.prevent>
+              <form class="d-flex ms-auto " @submit.prevent>
                 <input class="form-control me-2" type="search" placeholder="Search" v-model="searchQuery" aria-label="Search">
-                <button class="btn btn-outline-success" type="button" @click="handleSearch">Search</button>
+                <button class="btn btn-outline-success me-2 text-nowrap" type="button" @click="handleSearch('movie')">Search by Title</button>
+                <button class="btn btn-outline-success text-nowrap" type="button" @click="handleSearch('name')">Search by Actor</button>
               </form>
             </div>
           </div>
@@ -171,7 +174,7 @@ export const comSlideSmall = {
             :class="['carousel-item', { active: index === 0 }]"
           >
               <div class="row">
-                <div v-for="movie in group" :key="movie.id" @click="movieDetail(movie.id)" class="col-md-4">
+                <div v-for="movie in group" :key="movie.id" @click="movieDetail(movie.id)" class="col-md-4 h-100">
                   <div class="box-movie">
                       <div class="container-image">
                         <img :src="movie.image" class="d-block w-100" :alt="movie.title" />
@@ -286,25 +289,41 @@ export const comDetailMovie = {
 
         <div class='row'>
             <div class="col-md-5 d-flex align-items-center justify-content-center text-center p-3">
-              <div style="width: 80%;"> 
+              <div style="width: 90%;"> 
                 <img :src="(movie.posters && movie.posters.length > 0) ? movie.posters[2].link : movie.image" alt="Poster Movie" class="img-fluid rounded">
               </div>
             </div>
             <div class="col-md-7 p-4 d-flex flex-column justify-content-center">
-              <h2 style="text-align: center; margin-bottom: 70px;">{{ movie.fullTitle }}</h2>
-              <p><strong>Product year:</strong> {{ movie.year }}</p>
+              <h1 style="text-align: center; margin-bottom: 50px; color: #FF9658">{{ movie.fullTitle }}</h1>
+
+              <div class='row w-100 d-flex align-items-center justify-content-center p-1'>
+                  <div class="col-md-4">
+                    <p><strong>Type: </strong> {{movie.type}}</p>
+                  </div>
+                  <div class="col-md-8">
+                      <p><strong>Genre:</strong>       
+                        {{ movie.genreList && Array.isArray(movie.genreList) && movie.genreList.length > 0 
+                        ? movie.genreList.map(genre => genre.value).join(', ')  : 'N/A' }}          
+                    </p>
+                  </div>
+              
+              </div>
+              <div class='row w-100 d-flex align-items-center justify-content-center p-1'>
+                  <div class="col-md-4">
+                    <p><strong>Product year:</strong> {{ movie.year }}</p>
+                  </div>
+                  <div class="col-md-8">
+                      <p><strong>Release Date: </strong> {{movie.releaseDate}}</p> 
+                  </div>
+              
+              </div> 
+              <p><strong>Awards: </strong> {{movie.awards}}</p> 
+              <p><strong>Companies: </strong> {{movie.companies}}</p> 
               <p><strong>Director:</strong>       
                     {{ movie.directorList && Array.isArray(movie.directorList) && movie.directorList.length > 0 
                       ? movie.directorList.map(director => director.name).join(', ') : 'N/A' }}
               </p>
-              <p><strong>Genre:</strong> 
-              
-                  {{ movie.genreList && Array.isArray(movie.genreList) && movie.genreList.length > 0 
-                  ? movie.genreList.map(genre => genre.value).join(', ')  : 'N/A' }}
-          
-              </p>
-              <p><strong>Actors: </strong> 
-          
+              <p><strong>Actors: </strong>           
                 <span v-for="(actor, index) in movie.actorList" :key="actor.id">
                   <span @click="actorDetail(actor.id)" style="cursor: pointer; color: #007bff;">{{ actor.name }}</span>
                   <span v-if="index < movie.actorList.length - 1">, </span>
@@ -315,6 +334,11 @@ export const comDetailMovie = {
             </div>
         </div>
 
+
+        <div class='row d-flex align-items-center justify-content-center'>
+
+        
+        </div>
         <div class='row d-flex align-items-center justify-content-center'>
             <div class="col-md-9 p-3">
                <slideImage :images="movie.images" />
@@ -442,6 +466,78 @@ export const comListMovie = {
                 </li>
             </ul>
         </div>
+      </div>
+      <div v-if="dataSearch.length === 0" class="movie-list-container mt-2">
+          <h5>Not found movie.</h5>     
+      </div>
+  `,
+};
+export const comListMoviesOfActor = {
+  inject: ["listMovieOfActor", "page", "total_pages"],
+  methods: {
+    updateData(page) {
+      this.$emit("updateData", page);
+    },
+    movieDetail(id) {
+      this.$emit("movieDetail", id);
+    },
+  },
+  template: `
+      <div v-if="listMovieOfActor.length > 0" class="movie-list-container mt-2">
+        <h4 class="border-bottom pb-2 mb-3">List of movies participated</h4>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-6 g-4">
+
+          <div 
+            v-for="movie in listMovieOfActor" 
+            :key="movie.id" 
+            @click="movieDetail(movie.id)" 
+            class="col"
+          >
+            <div class="movie-card h-100">
+              <div class="movie-poster-container">
+                <div class="poster-wrapper">
+                  <img
+                    :src="(movie.posters && movie.posters.length > 0) ? movie.posters[0].link : movie.image"
+                    alt="Movie Poster"
+                    class="movie-poster"
+                  />
+                </div>
+                <div class="actorlist-movie-info">
+                  <div class="actorlist-movie-title">{{ movie.title }}</div>
+                  <p style="color: #b6b0b0; text-align: center;  width: 100%;"> [           
+                        {{ movie.genreList && Array.isArray(movie.genreList) && movie.genreList.length > 0 
+                        ? movie.genreList.map(genre => genre.value).join(', ')  : 'N/A' }} ]        
+                  </p>
+                  <p><strong>Rated:</strong> {{ movie.ratings.imDb }}</p>
+                  <p><strong>Length:</strong> {{ movie.runtimeStr }}</p>
+                  <p><strong>Language:</strong> {{ movie.languages }}</p>
+                  <p><strong>Role:</strong> {{ movie.roleOfActor }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pagination-controls d-flex align-items-center justify-content-center mt-4" >
+            <ul class="pagination">
+                <li class="page-item" :class="{ disabled: page === 1}">
+                    <a class="page-link" href="#" @click.prevent="updateData(page -1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <li class="page-item" v-for="i in total_pages">
+                    <a :class="{ 'page-link': true, 'active': i === page }" href="#" @click.prevent="updateData(i)">{{i}}</a>
+                </li>
+                <li class="page-item" :class="{ disabled: page === total_pages}">
+                    <a class="page-link" href="#" @click.prevent="updateData(page  + 1)" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+      </div>
+      <div v-if="listMovieOfActor.length === 0" class="movie-list-container mt-2">
+          <h5>Not found movie.</h5>     
       </div>
   `,
 };

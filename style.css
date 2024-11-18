@@ -150,7 +150,7 @@
 .carousel-inner .container-image {
   width: 100%;
   height: 100%;
-  aspect-ratio: 4/2;
+  aspect-ratio: 4/3;
   overflow: hidden;
   transition: transform 0.3s ease;
   position: relative;
@@ -170,8 +170,8 @@
 }
 
 .box-movie:hover {
-  border: 2px solid #fff;
-  transform: scale(1.4);
+  border: 2px solid #c8be73;
+  transform: scale(1.2);
   z-index: 999999;
   background-color: rgba(0, 0, 0, 0.923);
 }
@@ -243,3 +243,31 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 /* =========== END LIST MOVIE SEARCH ============= */
+
+/* ======== REVIEW ========== */
+.light-mode .card {
+  background-color: transparent !important;
+  border: 1px solid #969393;
+}
+
+.dark-mode .card {
+  background-color: #ccc !important;
+}
+
+/* ======== END REVIEW ========== */
+
+/* ========  LIST MOVIE OF ACTOR ====== */
+.actorlist-movie-info {
+  padding: 7px;
+  font-size: 0.7rem;
+}
+
+.actorlist-movie-info p {
+  margin-bottom: 2px;
+}
+.actorlist-movie-info .actorlist-movie-title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+}
+/* ========  END LIST MOVIE OF ACTOR ====== */

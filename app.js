@@ -8,6 +8,7 @@ import {
   comDetailActor,
   slideImage,
   comListMovie,
+  comListMoviesOfActor,
 } from "./layout.js";
 import { DBProvider } from "./moduleProvider.js";
 import { computed } from "vue";
@@ -32,7 +33,8 @@ export default {
       isLoading: true,
       listMovieOfActor: [],
       dataSearch: [],
-      temp: "",
+      tempQuery: "",
+      tempTypeSearch: "",
     };
   },
   provide() {
@@ -48,24 +50,12 @@ export default {
       topRatingMovies: computed(() => this.topRatingMovies),
       listMovieOfActor: computed(() => this.listMovieOfActor),
       dataSearch: computed(() => this.dataSearch),
+      tempTypeSearch: computed(() => this.tempTypeSearch),
     };
   },
   methods: {
     toggleMode() {
       this.isDarkMode = !this.isDarkMode;
-    },
-
-    async loadMovies(page = 1) {
-      try {
-        const query = `movie/movie/?page=${page}&per_page=${this.per_page}`;
-        const data = await dbProvider.fetch(query);
-        this.movies = data.items;
-        this.page = data.page;
-        this.total_pages = data.total_page;
-        console.log(data);
-      } catch (error) {
-        console.error("Error loading movies:", error);
-      }
     },
     async loadMoviesFromSearch(page = 1, pattern, cls = "movie") {
       if (pattern) {
@@ -75,22 +65,19 @@ export default {
           this.dataSearch = data.items;
           this.page = page;
           this.total_pages = data.total_page;
-          console.log(data);
-          console.log(this.dataSearch);
         } catch (error) {
           console.error("Error loading movies:", error);
         }
       }
     },
     async loadListMovieOfActor(page = 1, actorId) {
-      console.log("actor id: ", actorId);
       try {
+        this.per_page = 6;
         const query = `movie/actor-movies/${actorId}?page=${page}&per_page=${this.per_page}`;
         const data = await dbProvider.fetch(query);
         this.listMovieOfActor = data.items;
         this.page = data.page;
         this.total_pages = data.total_page;
-        console.log("List Movie Of actor: ", data);
       } catch (error) {
         console.error("Error loading movies:", error);
       }
@@ -101,7 +88,6 @@ export default {
         const query = `movie/topboxoffice/?per_page=5&page=1`;
         const data = await dbProvider.fetch(query);
         this.topBoxOfficeMovies = data.items;
-        console.log(data);
       } catch (error) {
         console.error("Error loading movies:", error);
       }
@@ -113,7 +99,6 @@ export default {
         const query = `get/mostpopular/?per_page=20&page=1`;
         const data = await dbProvider.fetch(query);
         this.mostPopularMovies = data.items;
-        console.log(data);
       } catch (error) {
         console.error("Error loading movies:", error);
       }
@@ -125,7 +110,6 @@ export default {
         const query = `get/top50/?per_page=20&page=1`;
         const data = await dbProvider.fetch(query);
         this.topRatingMovies = data.items;
-        console.log(data);
       } catch (error) {
         console.error("Error loading movies:", error);
       }
@@ -133,30 +117,29 @@ export default {
     },
 
     async loadDataHome() {
-      this.loadTopBoxOffice();
-      this.loadMostPopularMovies();
-      this.loadTopRating();
+      await this.loadTopBoxOffice();
+      await this.loadMostPopularMovies();
+      await this.loadTopRating();
       this.isLoading = false;
     },
 
     async loadActorDetail(actorId) {
       this.isLoading = true;
-      console.log("ActorID: ", actorId);
       try {
         const query = `detail/name/${actorId}`;
-
         const data = await dbProvider.fetch(query);
-        console.log("Detail Actor: ", data);
         if (data.detail) {
           this.actor = data.detail;
           this.content = "actorDetail";
+          await this.loadListMovieOfActor(1, actorId);
         } else {
-          console.error("Movie not found");
+          console.error("Actor not found");
+          alert("Not found detail information of this actor.");
         }
       } catch (error) {
         console.error("Error loading movie detail:", error);
       }
-      this.loadListMovieOfActor(1, actorId);
+
       this.isLoading = false;
     },
     async loadReview(movieId) {
@@ -180,13 +163,16 @@ export default {
     },
     async loadMovieDetail(movieId) {
       this.isLoading = true;
+      this.tempQuery = "";
+      this.tempTypeSearch = "";
+      this.dataSearch = [];
       try {
         const query = `detail/movie/${movieId}`;
         const data = await dbProvider.fetch(query);
         if (data.detail) {
           this.movie = data.detail;
           this.content = "movieDetail";
-          this.loadReview(movieId);
+          await this.loadReview(movieId);
         } else {
           console.error("Movie not found");
         }
@@ -197,24 +183,36 @@ export default {
     },
     resetData() {
       this.movie = {};
-      (this.actor = {}), (this.reviews = []), (this.content = "");
+      this.actor = {};
+      this.reviews = [];
+      this.content = "";
+      this.tempQuery = "";
+      this.tempTypeSearch = "";
     },
-    handleSearch(query) {
+    async handleSearch(payload) {
       this.content = "search";
-      console.log("Searching for:", query);
+      const { query, type } = payload;
       if (query != "") {
-        this.temp = query;
-        this.loadMoviesFromSearch(1, query, "movie");
+        this.tempQuery = query;
+        this.tempTypeSearch = type;
+        await this.loadMoviesFromSearch(1, query, type);
       }
     },
-    loadPage(page) {
-      this.loadMoviesFromSearch(page, this.temp, "movie");
+    async loadPage(page) {
+      if (this.content === "search") {
+        await this.loadMoviesFromSearch(
+          page,
+          this.tempQuery,
+          this.tempTypeSearch
+        );
+      }
+      if (this.content === "actorDetail") {
+        await this.loadListMovieOfActor(page, this.actor.id);
+      }
     },
   },
-  mounted() {
-    setTimeout(() => {
-      this.loadDataHome();
-    }, 300);
+  async mounted() {
+    await this.loadDataHome();
   },
   computed: {
     modeClass() {
@@ -232,6 +230,7 @@ export default {
     comDetailActor,
     slideImage,
     comListMovie,
+    comListMoviesOfActor,
   },
   template: `
         <div :class="modeClass">
@@ -250,7 +249,7 @@ export default {
                   </div>
                 </div>
 
-                <div v-if="isLoading" class="h-100 d-flex justify-content-center align-items-center my-2">
+                <div v-if="isLoading" class="w-100 d-flex justify-content-center align-items-center my-2" style="height: 300px;">
                     <div class="spinner-border" role="status">
                       <span class="visually-hidden">Loading...</span>
                     </div>
@@ -292,20 +291,23 @@ export default {
                       <div class="col-12 p-2">
                         <comDetailActor  />
                       </div>
+                      <div class="col-12 p-2">
+                        <comListMoviesOfActor  @update-data="loadPage" @movie-detail='loadMovieDetail'/>
+                      </div>
                     </div>
 
                     <!-- Search -->
                     <div class="row" v-if="content === 'search'">
                       <div class="col-12 p-2">
-                        <comListMovie  @update-data="loadPage"  @movie-detail='loadMovieDetail'/>
+                          <h5 v-if="tempTypeSearch === 'name'">List of movies found by actor name</h5>
+                          <h5  v-if="tempTypeSearch === 'movie'">List of movies found by movie title</h5>
+                      </div>
+                      <div class="col-12 p-2">
+                        <comListMovie  @update-data="loadPage" @movie-detail='loadMovieDetail'/>
                       </div>
                     </div>
 
                 </div>
-
-
-                
-                
 
                 <!-- Footer -->
                 <div class="row my-2 py-2">
