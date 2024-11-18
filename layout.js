@@ -26,7 +26,7 @@ export const comHeader = {
               <div :class="['mode-toggle', switchPosition]" @click="toggleMode">
                 <div class="switch"></div>
               </div>
-              <i :class="['bi', modeIcon]"></i>
+              <i :class="['bi', modeIcon]"  @click="toggleMode"></i>
             </div>
           </div>
         `,
