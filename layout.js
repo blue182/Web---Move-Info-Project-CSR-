@@ -512,6 +512,7 @@ export const comListMoviesOfActor = {
                   <p><strong>Length:</strong> {{ movie.runtimeStr }}</p>
                   <p><strong>Language:</strong> {{ movie.languages }}</p>
                   <p><strong>Role:</strong> {{ movie.roleOfActor }}</p>
+                  <p><strong>Release Date: </strong> {{movie.releaseDate}}</p> 
                 </div>
               </div>
             </div>
@@ -535,9 +536,6 @@ export const comListMoviesOfActor = {
                 </li>
             </ul>
         </div>
-      </div>
-      <div v-if="listMovieOfActor.length === 0" class="movie-list-container mt-2">
-          <h5>Not found movie.</h5>     
       </div>
   `,
 };
