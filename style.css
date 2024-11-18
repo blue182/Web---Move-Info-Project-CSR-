@@ -95,6 +95,14 @@
 .dark-mode .btn-outline-success:hover {
   border-color: #1e7e34;
 }
+
+.navbar-brand {
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.2);
+}
 /* ====== END NAVBAR ======== */
 
 /* ========== COMPONENT SLIDE =========== */

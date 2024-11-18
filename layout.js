@@ -255,6 +255,19 @@ export const slideImage = {
   },
   template: `
         <div id="carouselExample" class="carousel slide"  data-bs-ride="carousel" data-bs-interval="3000" >
+            <!-- Indicators -->
+            <div class="carousel-indicators">
+              <button 
+                v-for="(image, index) in images" 
+                :key="index" 
+                type="button" 
+                :data-bs-target="'#carouselExample'" 
+                :data-bs-slide-to="index" 
+                :class="{ active: index === 0 }" 
+                aria-label="'Slide ' + (index + 1)" 
+              ></button>
+            </div>
+
             <!-- Slides -->
             <div class="carousel-inner" style="height: 400px;">
               <div
@@ -386,7 +399,7 @@ export const comDetailMovie = {
         <div v-if="reviews.length > 0" class='row d-flex align-items-center justify-content-center'>
         
           <div class="col-md-11 p-3">
-              <h5 style="margin-bottom: 20px;">Reviews</h5>
+              <h5 class="border-bottom pb-2 mb-3" style="margin-bottom: 20px;">🗨️Reviews</h5>
               <!-- Review Section -->
               <div  v-for="(review, index) in visibleReviews" :key="review.username" class="card mb-3">
                 <div class="card-body">
