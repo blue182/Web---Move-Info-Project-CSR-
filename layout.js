@@ -106,6 +106,22 @@ export const comSlideLarge = {
   mounted() {},
   template: `
       <div id="movieCarousel" class="carousel slide" data-bs-ride="carousel">
+
+        <!-- Indicators -->
+        <div class="carousel-indicators">
+          <button 
+            v-for="(movie, index) in topBoxOfficeMovies" 
+            :key="'indicator-' + index" 
+            type="button" 
+            data-bs-target="#movieCarousel" 
+            :data-bs-slide-to="index" 
+            :class="{ active: index === 0 }" 
+            :aria-current="index === 0 ? 'true' : undefined" 
+            :aria-label="'Slide ' + (index + 1)">
+          </button>
+        </div>
+
+
         <div class="carousel-inner">
           <!-- Loop through topBoxOfficeMovies and display them -->
           <div v-for="(movie, index) in topBoxOfficeMovies" :key="movie.id" @click="movieDetail(movie.id)" :class="['carousel-item', index === 0 ? 'active' : '']">
@@ -118,7 +134,7 @@ export const comSlideLarge = {
               <div style="font-size: 1.2rem; color: rgb(251, 206, 28);">{{ movie.title }}</div>
               <div style="font-size: 0.9rem"> 
                 <div>Length: {{ movie.runtimeStr }}</div>
-                <div>Rating from IMDb: {{ movie.ratings.imDb }}</div>
+                <div>Rating from IMDB: {{ movie.ratings.imDb }}</div>
               </div>
             </div>
           </div>
@@ -163,6 +179,21 @@ export const comSlideSmall = {
     movieDetail(id) {
       this.$emit("movieDetail", id);
     },
+    parseCrew(crew) {
+      const crewMembers = crew.split(",");
+      const director = crewMembers
+        .find((member) => member.includes("(dir.)"))
+        .replace("(dir.)", "")
+        .trim();
+      const actors = crewMembers
+        .filter((member) => !member.includes("(dir.)"))
+        .map((member) => member.trim());
+
+      return {
+        director,
+        actors,
+      };
+    },
   },
   template: `
     <div :id="uniqueId" class="carousel slide" data-bs-ride="carousel" style="overflow: visible; position: relative;"> 
@@ -174,12 +205,18 @@ export const comSlideSmall = {
             :class="['carousel-item', { active: index === 0 }]"
           >
               <div class="row">
-                <div v-for="movie in group" :key="movie.id" @click="movieDetail(movie.id)" class="col-md-4 h-100">
+                <div v-for="movie in group" :key="movie.id" @click="movieDetail(movie.id)" class="col-4 col-md-4 col-lg-4 h-100">
                   <div class="box-movie">
                       <div class="container-image">
                         <img :src="movie.image" class="d-block w-100" :alt="movie.title" />
                       </div>
-                      <div class="text-center mt-2 title-movie">{{ movie.title }}</div>
+                      <div class="info-movie">
+                            <div class="text-center title-movie">{{ movie.title }}</div>
+                            <div class="crew-info">
+                              <div><strong>Director:</strong> {{ parseCrew(movie.crew).director }}</div>
+                              <div><strong>Actors:</strong> {{ parseCrew(movie.crew).actors.join(', ') }}</div>
+                            </div>
+                      </div>
                   </div>
                 </div>
               </div>

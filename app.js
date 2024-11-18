@@ -259,21 +259,21 @@ export default {
                     <div v-if="content === ''" >
                           <!-- Top Box Office -->
                           <div class="row my-4">
-                            <div class="col-3  mx-auto p-0">
+                            <div class="col-4  mx-auto p-0">
                               <comSlideLarge @movie-detail='loadMovieDetail'/>
                             </div>
                           </div>
                           <!-- Most popular -->
-                          <div class="row my-4" style="overflow: visible; position: relative; padding-top: 20px; ">
+                          <div class="row my-4" style=" position: relative; padding-top: 20px; ">
                             <h3>Most Popular</h3>
-                            <div class="col-12 p-2" style="overflow: visible; position: relative;">
+                            <div class="col-12 p-2" style=" position: relative;">
                               <comSlideSmall :movies="mostPopularMovies" @movie-detail='loadMovieDetail'/>
                             </div>
                           </div>
                           <!-- Top rating -->
-                          <div class="row my-4" style="overflow: visible; position: relative;padding-bottom: 20px;">
+                          <div class="row my-4" style="position: relative; padding-bottom: 20px;">
                           <h3>Top Rating</h3>
-                            <div class="col-12 p-2" style="overflow: visible; position: relative; ">
+                            <div class="col-12 p-2" style=" position: relative; ">
                               <comSlideSmall :movies="topRatingMovies"  @movie-detail='loadMovieDetail'/>
                             </div>
                           </div>
