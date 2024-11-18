@@ -6,6 +6,11 @@ export class DBProvider {
     this.cache = {};
   }
 
+  /**
+   * Fetch raw data from server and cache it.
+   * @param {String} endpoint - API endpoint to fetch data.
+   * @returns {Array} - Array of raw data from server.
+   */
   async fetchRawData(endpoint) {
     if (this.cache[endpoint]) return this.cache[endpoint];
 
@@ -14,7 +19,7 @@ export class DBProvider {
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Failed to fetch data from ${url}`);
       const data = await response.json();
-      this.cache[endpoint] = data; // Cache the data
+      this.cache[endpoint] = data;
       return data;
     } catch (error) {
       console.error(error);
@@ -22,6 +27,11 @@ export class DBProvider {
     }
   }
 
+  /**
+   * Parse the input query into components.
+   * @param {String} query - Input query string.
+   * @returns {Object} - Parsed query components.
+   */
   parseQuery(query) {
     const [path, params] = query.split("?");
     const [type, cls, pattern] = path.split("/");
@@ -37,6 +47,13 @@ export class DBProvider {
     };
   }
 
+  /**
+   * Paginate data.
+   * @param {Array} data - Array of data.
+   * @param {Number} page - Current page number (1-based).
+   * @param {Number} perPage - Number of items per page.
+   * @returns {Object} - Paginated result.
+   */
   paginateData(data, page = 1, perPage = 10) {
     const total = data.length;
     const totalPage = Math.ceil(total / perPage);
@@ -51,6 +68,11 @@ export class DBProvider {
     };
   }
 
+  /**
+   * Fetch data based on query.
+   * @param {String} query - Input query string.
+   * @returns {Object} - Processed result with required format.
+   */
   async fetch(query) {
     const { type, class: cls, pattern, params } = this.parseQuery(query);
 
