@@ -1,0 +1,309 @@
+/* =========== HEADER & FOOTER ========== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.light-mode {
+  background-color: white;
+  color: rgb(44, 10, 10);
+}
+.dark-mode {
+  background-color: #101112cd;
+  color: rgba(250, 208, 208, 0.83);
+}
+
+.header {
+  background-color: #f94a5842;
+  padding: 10px;
+  border: 1px solid #dc3545;
+  border-radius: 5px;
+}
+
+.footer {
+  width: 100%;
+  background-color: #f94a5842;
+  border: 1px solid #dc3545;
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.mode-toggle-container {
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+}
+
+.mode-toggle {
+  width: 40px;
+  height: 15px;
+  background-color: white;
+  border-radius: 25px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.mode-toggle .switch {
+  width: 10px;
+  height: 10px;
+  background-color: #6c757d;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  transition: all 0.3s ease;
+}
+
+.switch-dark {
+  background-color: #3582df;
+  border: 1px solid blue;
+  box-shadow: 0 0 5px #007bff;
+}
+
+.switch-dark .switch {
+  background-color: white;
+  left: 25px;
+}
+
+/* ========= END HEADER & FOOTER ========== */
+/* ====== NAVBAR ======== */
+.dark-mode i {
+  color: rgba(255, 255, 255, 0.83);
+}
+.dark-mode input {
+  background-color: #10111292;
+  color: #f8f9fa;
+}
+
+.dark-mode input.form-control:focus {
+  background-color: #504848 !important;
+  border: 1px solid #007bff;
+  outline: none;
+  color: #f8f9fa;
+}
+
+.dark-mode input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dark-mode .btn-outline-success {
+  border-color: #30d657;
+  color: #2ee759;
+}
+
+.dark-mode .btn-outline-success:hover {
+  border-color: #1e7e34;
+}
+
+.navbar-brand {
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.2);
+}
+/* ====== END NAVBAR ======== */
+
+/* ========== COMPONENT SLIDE =========== */
+.largeSlide {
+  transition: transform 0.3s ease;
+}
+.largeSlide:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 0px 30px rgba(43, 188, 240, 0.5);
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.5);
+  background-size: 100%, 100%;
+  border-radius: 50%;
+  padding: 10px;
+}
+.carousel-control-prev,
+.carousel-control-next {
+  width: 10%;
+}
+
+.carousel-control-prev {
+  left: -90%;
+}
+
+.carousel-control-next {
+  right: -90%;
+}
+
+.carousel-inner .inner-image {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  cursor: pointer;
+}
+.carousel-inner .inner-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-indicators {
+  bottom: -20px;
+}
+
+/* ======================= */
+
+.carousel-inner .row {
+  overflow: visible;
+  position: relative;
+}
+
+.box-movie {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.carousel-inner .container-image {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+.carousel-inner .container-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.slideSmall.carousel-control-prev {
+  left: -7%;
+}
+
+.slideSmall.carousel-control-next {
+  right: -7%;
+}
+
+.box-movie:hover {
+  border: 1px solid #5ff04f;
+  transform: scale(1.2);
+  z-index: 9999;
+  border-radius: 5px 5px 0 0;
+  box-shadow: 0px 0px 20px rgba(183, 251, 58, 0.679);
+}
+
+.box-movie .info-movie {
+  position: absolute;
+  bottom: -25%; /* Gắn phần info-movie ở cuối ảnh */
+  left: -2px;
+  width: 101%;
+  text-align: center;
+  color: white;
+  opacity: 0;
+  padding: 10px;
+  transition: opacity 0.3s ease-in-out;
+  font-size: 0.7rem;
+  z-index: 9999;
+  border-radius: 0 0 5px 5px;
+  background-color: rgba(0, 0, 0, 0.99);
+}
+
+.box-movie .info-movie .title-movie {
+  color: rgb(211, 149, 50);
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.box-movie:hover .info-movie {
+  opacity: 1;
+  border-bottom: 2px solid #5ff04f;
+  border-left: 2px solid #5ff04f;
+  border-right: 2px solid #5ff04f;
+}
+.carousel-item {
+  transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+}
+
+/* ========== END COMPONENT SLIDE =========== */
+
+/* =========== LIST MOVIE SEARCH ============= */
+.movie-card {
+  border: 2px solid #b2a4a4;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.poster-wrapper {
+  width: 100%;
+  aspect-ratio: 3/4;
+}
+
+.movie-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.movie-info {
+  padding: 20px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.movie-info .movie-title {
+  width: 100%;
+  text-align: center;
+}
+
+.movie-info p {
+  margin-bottom: 5px;
+}
+
+.movie-card {
+  transition: transform 0.3s ease;
+  transform: scale(1);
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.movie-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0px 20px rgba(239, 150, 25, 0.567);
+}
+/* =========== END LIST MOVIE SEARCH ============= */
+
+/* ======== REVIEW ========== */
+.light-mode .card {
+  background-color: transparent !important;
+  border: 1px solid #969393;
+}
+
+.dark-mode .card {
+  background-color: #ccc !important;
+}
+
+/* ======== END REVIEW ========== */
+
+/* ========  LIST MOVIE OF ACTOR ====== */
+.actorlist-movie-info {
+  padding: 7px;
+  font-size: 0.7rem;
+}
+
+.actorlist-movie-info p {
+  margin-bottom: 2px;
+}
+.actorlist-movie-info .actorlist-movie-title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+}
+/* ========  END LIST MOVIE OF ACTOR ====== */
